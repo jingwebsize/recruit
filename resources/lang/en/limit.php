@@ -13,7 +13,7 @@ return [
         'enrollment_method' => '入学方式',
         'detail' => '相应明细',
         'number' => '数量',
-        'affiliation_unit' => '归属单位',
+        'unit' => '归属单位',
         'profession' => '招生专业',
         'check_status' => '核对情况',
         'operator' => '操作人',

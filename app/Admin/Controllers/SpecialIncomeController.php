@@ -11,6 +11,7 @@ use Dcat\Admin\Admin;
 use Dcat\Admin\Widgets\Modal;
 use App\Admin\Forms\SincomeImport;
 use App\Admin\Actions\SincomeTemplate;
+use App\Models\Tag;
 
 class SpecialIncomeController extends AdminController
 {
@@ -57,8 +58,14 @@ class SpecialIncomeController extends AdminController
             });
         
             $grid->disableViewButton();
+            $grid->expandFilter();
             $grid->filter(function (Grid\Filter $filter) {
-                $filter->equal('id');
+                // 更改为 panel 布局
+                $filter->panel();
+                $filter->between('year','年度')->year()->width(3);
+                $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
+                // $filter->equal('type','类型');
+                $filter->in('detail', '明细')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
         
             });
         });
@@ -101,10 +108,17 @@ class SpecialIncomeController extends AdminController
             //默认调取当前年度
             $form->text('year')->default(date('Y'));
             $form->text('reason');
-            $form->text('income_time');
-            $form->text('type');
+            // $form->text('income_time');
+            // 选择config admin中的types值
+            $form->select('type')->options(config('admin.types'));
+            // $form->text('type');
             $form->text('number');
-            $form->text('detail');
+            // $form->text('detail');
+            $form->select('detail')->options(function ($id) {
+                // $tags = \App\Models\Tag::pluck('tag', 'id');
+                $tags = \App\Models\Tag::pluck('tag', 'tag');
+                return $tags;
+            });
             $form->switch('check')->default(1);
             $form->text('operator')->default(Admin::user()->name);
             //$form->disable('operator')->auth();

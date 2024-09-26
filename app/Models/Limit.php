@@ -10,5 +10,6 @@ class Limit extends Model
 {
 	use HasDateTimeFormatter;
     protected $table = 'limit';
+    protected $guarded = [''];
     
 }

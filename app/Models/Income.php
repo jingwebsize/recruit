@@ -9,5 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Income extends Model
 {
 	use HasDateTimeFormatter;
-	//protected $guarded = [''];
+	protected $guarded = [''];
+	
 }

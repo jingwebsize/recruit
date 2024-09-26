@@ -19,10 +19,10 @@ class CreateOutcomesTable extends Migration
             $table->string('year')->comment('年度')->default('');
             $table->string('type')->default('');
             $table->string('student_id')->unique()->default('')->nullable();
-            $table->string('admission_category')->default('')->nullable();
+            $table->string('admission_type')->default('')->nullable();
             $table->string('enrollment_method')->default('')->nullable();
-            $table->string('affiliation_unit')->default('');
-            $table->string('admission_major')->default('');
+            $table->string('unit')->default('');
+            $table->string('profession')->default('');
             $table->string('student_name')->default('');
             $table->string('actual_guidance_teacher')->default('');
             $table->string('teacher')->default('');

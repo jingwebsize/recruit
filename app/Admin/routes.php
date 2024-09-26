@@ -19,7 +19,10 @@ Route::group([
     //增加IncomeController、LimitController、OutcomeController、Tag
     $router->resource('tags', 'TagController');
     $router->resource('incomes', 'IncomeController');
+    $router->resource('incomequery', 'IncomequeryController');
     $router->resource('limits', 'LimitController');
+    $router->resource('limitquery', 'LimitqueryController');
     $router->resource('outcomes', 'OutcomeController');
+    $router->resource('outcomequery', 'OutcomequeryController');
 
 });

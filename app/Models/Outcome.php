@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Outcome extends Model
 {
-	use HasDateTimeFormatter;    }
+	use HasDateTimeFormatter;    
+	protected $guarded = [''];
+}

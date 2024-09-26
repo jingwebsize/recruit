@@ -24,7 +24,7 @@ class CreateLimitTable extends Migration
             $table->string('enrollment_method')->comment('入学方式')->default('');
             $table->string('detail')->comment('相应明细')->default('');
             $table->integer('number')->comment('数量')->default(0);
-            $table->string('affiliation_unit')->comment('归属单位')->default('');
+            $table->string('unit')->comment('归属单位')->default('');
             $table->string('profession')->comment('招生专业')->default('');
             $table->tinyInteger('check_status')->comment('核对情况')->default(0);
             $table->string('operator')->comment('操作人')->default('');
