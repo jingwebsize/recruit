@@ -75,7 +75,8 @@ class Outcomequery extends Repository
         $enrollment_method = request()->input('enrollment_method');
         $profession = request()->input('profession');
 
-        // dd($params);
+        // dd(request()->input());
+        // dd($teacher);
 
         // 查询limit表，选择year, type, teacher, unit, admission_type, enrollment_method, profession字段，并计算number字段的总和，命名为limit_quantity
         $limitQuery = DB::table('limit')->select(DB::raw('year, type, teacher, unit, admission_type, enrollment_method, profession,sum(number) as limit_quantity'))
@@ -104,24 +105,24 @@ class Outcomequery extends Repository
         //     $limitQuery->whereIn('detail', $detail);
         // }
         if ($unit !== null) {
-            $limitQuery->where('unit', '==',$unit);
-            $OutcomeQuery->where('unit', '==',$unit);
+            $limitQuery->where('unit', $unit);
+            $OutcomeQuery->where('unit', $unit);
         }
         if ($teacher !== null) {
-            $limitQuery->where('teacher', '==',$teacher);
-            $OutcomeQuery->where('teacher', '==',$teacher);
+            $limitQuery->where('teacher', $teacher);
+            $OutcomeQuery->where('teacher', $teacher);
         }
         if ($admission_type !== null) {
-            $limitQuery->where('admission_type', '==',$admission_type);
-            $OutcomeQuery->where('admission_type', '==',$admission_type);
+            $limitQuery->where('admission_type', $admission_type);
+            $OutcomeQuery->where('admission_type', $admission_type);
         }
         if ($enrollment_method !== null) {
-            $limitQuery->where('enrollment_method', '==',$enrollment_method);
-            $OutcomeQuery->where('enrollment_method', '==',$enrollment_method);
+            $limitQuery->where('enrollment_method', $enrollment_method);
+            $OutcomeQuery->where('enrollment_method', $enrollment_method);
         }
         if ($profession !== null) {
-            $limitQuery->where('profession', '==',$profession);
-            $OutcomeQuery->where('profession', '==',$profession);
+            $limitQuery->where('profession', $profession);
+            $OutcomeQuery->where('profession', $profession);
         }
 
 

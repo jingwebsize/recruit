@@ -100,8 +100,8 @@ class Limitquery extends Repository
             $limitQuery->whereIn('detail', $detail);
         }
         if ($unit !== null) {
-            $incomeQuery->where('unit', '==',$unit);
-            $limitQuery->where('unit', '==',$unit);
+            $incomeQuery->where('unit', $unit);
+            $limitQuery->where('unit', $unit);
         }
 
 
