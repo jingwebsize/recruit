@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class Limittemplate extends Action
+class LimitTemplate extends Action
 {
     /**
      * @return string
