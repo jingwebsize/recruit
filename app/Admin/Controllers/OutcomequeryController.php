@@ -46,7 +46,7 @@ class OutcomequeryController extends AdminController
 
                 $outcomes = Outcome::where('year',$this->year)->where('type',$this->type)->where('unit', $this->unit)->where('teacher',$this->teacher)->where('admission_type', $this->admission_type)->where('enrollment_method', $this->enrollment_method)->where('profession', $this->profession)->
                 get(['id','year','type','student_id','unit','admission_type','enrollment_method','profession','student_name','actual_guidance_teacher','teacher'])->toArray();
-                $titles=['ID', '年度', '类型', '考生编号（唯一）','归属单位','录取类别','入学方式','相应招生专业','学生姓名','实际指导老师','招生指标对应老师'];
+                $titles=['ID', '年度', '类型', '考生身份证号（唯一）','归属单位','录取类别','入学方式','相应招生专业','学生姓名','实际指导老师','招生指标对应老师'];
                 // $modal->table($titles,$comments);
                 // 设置弹窗宽度1100px
                 $modal->xl();

@@ -7,7 +7,7 @@ return [
     'fields' => [
         'year' => '年度',
         'type' => '类型',
-        'student_id' => '考生编号（唯一）',
+        'student_id' => '考生身份证（唯一）',
         'admission_type' => '录取类别',
         'enrollment_method' => '入学方式',
         'unit' => '归属单位',
