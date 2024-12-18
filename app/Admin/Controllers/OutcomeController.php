@@ -25,7 +25,8 @@ class OutcomeController extends AdminController
         return Grid::make(new Outcome(), function (Grid $grid) {
             $grid->withBorder();
             $grid->scrollbarX();
-            $grid->column('id')->sortable()->width(30);
+            $grid->column('id')->width(30);
+            // $grid->number('id')->width(30);
             $grid->column('year')->width(60);
             $grid->column('type')->width(60);
             $grid->column('student_id')->width(160);

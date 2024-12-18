@@ -26,19 +26,21 @@ class IncomeController extends AdminController
             // tags是用数字来维护的，就需要做映射
             // $tags = Tag::all()->pluck('tag','id')->toArray();
             // dump($tags);
-            $grid->column('id');
-            $grid->column('year');
+            $grid->withBorder();
+            $grid->scrollbarX();
+            $grid->column('id')->width(30);
+            $grid->column('year')->width(60);
             //学校下达时间
-            $grid->column('time');
-            $grid->column('type');
-            $grid->column('school_detail',);
-            $grid->column('number');
-            $grid->column('unit');
-            $grid->column('detail');
+            $grid->column('time')->width(100);
+            $grid->column('type')->width(100);
+            $grid->column('school_detail')->width(300);;
+            $grid->column('number')->width(30);
+            $grid->column('unit')->width(100);
+            $grid->column('detail')->width(100);
             // $grid->column('detail')->using($tags);
-            $grid->column('enrollment_method');
+            $grid->column('enrollment_method')->width(80);
             // $grid->column('check')->bool([1 => true, 0 => false]);;
-            $grid->column('remark')->sortable();
+            $grid->column('remark')->sortable()->width(200);
             $grid->column('operator');
             
             // $grid->column('created_at');
@@ -72,7 +74,6 @@ class IncomeController extends AdminController
             //     $filter->in('type', '类型')->multipleSelect(config('admin.types'));
         
             // });
-            $grid->withBorder();
             $grid->expandFilter();
             $grid->filter(function (Grid\Filter $filter) {
                 // 更改为 panel 布局
