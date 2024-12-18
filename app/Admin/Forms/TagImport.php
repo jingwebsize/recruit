@@ -42,6 +42,9 @@ class TagImport extends Form
         foreach ($data['Sheet1'] as $row) {
             // exit;
             // 
+            if(Tag::where('tag', $row['归属单位下一级（平台或专业）'])->exists()){
+                continue;
+            }
             Tag::create([
                 'tag' => $row['归属单位下一级（平台或专业）'],
                 'display' => 1,
