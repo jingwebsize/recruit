@@ -65,7 +65,7 @@ class SpecialIncomeController extends AdminController
                 $filter->between('year','年度')->year()->width(3);
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
                 // $filter->equal('type','类型');
-                $filter->in('detail', '明细')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
+                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
         
             });
         });

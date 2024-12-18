@@ -43,7 +43,7 @@ class LimitImport extends Form
         $tags =Tag::pluck('tag')->toArray();
         // 取config admin中的unit、type、admission_type、enrollment_method
         $types = config('admin.types');
-        $admission_types = config('admin.admission_types');
+        // $admission_types = config('admin.admission_types');
         $enrollment_methods = config('admin.enrollment_methods');
         $units = config('admin.units');
         $count = 0;
@@ -51,8 +51,8 @@ class LimitImport extends Form
         foreach ($data['Sheet1'] as $row) {
             $count++;
             //每行中明细是否存在在tag数组里，不存在就退出循环，报错
-            if(!in_array($row['明细'], $tags)){
-                return $this->response()->error('第'.$count.'行明细不存在');
+            if(!in_array($row['归属单位下一级'], $tags)){
+                return $this->response()->error('第'.$count.'行归属单位下一级不存在');
             }
             //每行中类型是否存在在types数组里，不存在就退出循环，报错
             if(!in_array($row['类型'], $types)){
@@ -63,24 +63,27 @@ class LimitImport extends Form
                 return $this->response()->error('第'.$count.'行归属单位不存在');
             }
             //每行中录取类别是否存在在admission_types数组里，不存在就退出循环，报错
-            if(!in_array($row['录取类别'], $admission_types)){
-                return $this->response()->error('第'.$count.'行录取类别不存在');
-            }
+            // if(!in_array($row['录取类别'], $admission_types)){
+            //     return $this->response()->error('第'.$count.'行录取类别不存在');
+            // }
             //每行中入学方式是否存在在enrollment_methods数组里，不存在就退出循环，报错
             if(!in_array($row['入学方式'], $enrollment_methods)){
                 return $this->response()->error('第'.$count.'行入学方式不存在');
             }
+        }
+        foreach ($data['Sheet1'] as $row) {
             // 创建数据，limit表，包含年度、支出到具体教师、类型、数量、明细、归属单位、录取类别、入学方式、明细、招生专业
             Limit::create([
                 'year' => $row['年度'],
-                'teacher' => $row['支出到具体教师'],
                 'type' => $row['类型'],
-                'number' => $row['数量'],
-                'detail' => $row['明细'],
-                'unit' => $row['归属单位'],
-                'admission_type' => $row['录取类别'],
-                'enrollment_method' => $row['入学方式'],
+                'teacher' => $row['招生指标对应老师'],
+                'department' => $row['招生研究所'],
                 'profession' => $row['招生专业'],
+                'number' => $row['指标明细'],
+                'unit' => $row['归属单位'],
+                'detail' => $row['归属单位下一级'],
+                // 'admission_type' => $row['录取类别'],
+                'enrollment_method' => $row['入学方式'],
                 'check_status' => 1,
                 'operator' => Admin::user()->name,
                 'remark' => $row['备注'],

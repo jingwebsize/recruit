@@ -10,7 +10,7 @@ return [
         'income_time' => '收入时间',
         'type' => '类型',
         'number' => '数量',
-        'detail' => '明细',
+        'detail' => '归属单位下一级',
         'check' => '核对情况',
         'operator' => '操作人',
         'remark' => '备注',

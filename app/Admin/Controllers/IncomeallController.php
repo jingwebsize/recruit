@@ -12,80 +12,64 @@ use App\Admin\Forms\IncomeImport;
 use App\Admin\Actions\IncomeTemplate;
 use App\Models\Tag;
 use Dcat\Admin\Admin;
+use Illuminate\Support\Facades\DB;
+use Dcat\Admin\Widgets\Table;
 
-class IncomeController extends AdminController
+class IncomeallController extends AdminController
 {
     /**
      * Make a grid builder.
      *
      * @return Grid
      */
+    protected $title='总数统计';
     protected function grid()
     {
         return Grid::make(new Income(), function (Grid $grid) {
             // tags是用数字来维护的，就需要做映射
             // $tags = Tag::all()->pluck('tag','id')->toArray();
             // dump($tags);
-            $grid->column('id');
-            $grid->column('year');
+            $grid->model()->select(DB::raw('year,time,type,sum(number) as total_number'))->groupBy('year','time','type');
+            // $grid->column('id');
+            $grid->column('year','年度');
             //学校下达时间
-            $grid->column('time');
+            $grid->column('time','下达时间');
             $grid->column('type');
-            $grid->column('school_detail',);
-            $grid->column('number');
-            $grid->column('unit');
-            $grid->column('detail');
-            // $grid->column('detail')->using($tags);
-            $grid->column('enrollment_method');
-            // $grid->column('check')->bool([1 => true, 0 => false]);;
-            $grid->column('remark')->sortable();
-            $grid->column('operator');
-            
-            // $grid->column('created_at');
-            
-            //显示更新时间，时间格式为月-日
-            $grid->column('updated_at')->sortable()->display(function ($value) {
-                return date('Y-m-d', strtotime($value));
-            });
+            $grid->column('total_number','首批计划数量');
+            $grid->column('expand','明细')->display(function()  {
+                return '点击展开';
+            })->expand(function($model){
+                $detail = \App\Models\Income::where('year',$this->year)->where('time',$this->time)->where('type',$this->type)->get(['id','school_detail','number','unit','detail'])->toArray();
+                //用table组件显示明细
+                $titles = ['id','首批学校明细','首批分配数量','归属单位','归属单位下一级'];
+                return Table::make($titles, $detail);
 
-            // $grid->column('updated_at')->sortable();
-
-            //增加一个导入excel文件的按钮
-            $grid->tools(function (Grid\Tools $tools) {
-                $tools->append(Modal::make()
-                    // 大号弹窗
-                    ->lg()
-                    // 弹窗标题
-                    ->title('上传文件')
-                    // 按钮
-                    ->button('<button class="btn btn-primary"><i class="feather icon-upload"></i> 导入数据</button>')
-                    // 弹窗内容
-                    ->body(IncomeImport::make()));
-                    // 下载导入模板
-                    $tools->append(IncomeTemplate::make()->setKey('test_question'));
-
-            });            
-        
+            });        
+            //禁用编辑、显示、删除按钮
+            $grid->disableEditButton();
+            $grid->disableDeleteButton();
+            $grid->disableActions();
+            $grid->disableCreateButton();
+            $grid->disableBatchActions();
             // $grid->filter(function (Grid\Filter $filter) {
             //     // $filter->equal('id');
             //     $filter->between('year','年度')->year();
             //     $filter->in('type', '类型')->multipleSelect(config('admin.types'));
         
             // });
-            $grid->withBorder();
+            // $grid->withBorder();
             $grid->expandFilter();
             $grid->filter(function (Grid\Filter $filter) {
                 // 更改为 panel 布局
                 $filter->panel();
                 $filter->between('year','年度')->year()->width(3);
-                $filter->equal('time','下达时间')->width(3);
+                
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
                 // $filter->equal('type','类型');
-                $filter->equal('unit','归属单位')->Select(config('admin.units'))->width(3);
-                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
-                $filter->equal('enrollment_method','入学方式')->Select(config('admin.enrollment_methods'))->width(3);
+                $filter->equal('time', '下达时间')->width(3);
         
             });
+            
         });
     }
 

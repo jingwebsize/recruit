@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Repositories\Outcomequery;
+use App\Models\Tag;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
@@ -26,12 +27,12 @@ class OutcomequeryController extends AdminController
 
             $grid->column('year','年度')->sortable();
             $grid->column('type');
-            // $grid->column('detail','对应明细');
-            $grid->column('teacher','支出的教师姓名');
+            $grid->column('teacher','招生指标对应老师');
             $grid->column('unit','归属单位');
-            $grid->column('admission_type','录取类别');
+            $grid->column('detail','归属单位下一级');
+            $grid->column('profession','招生专业');
+            // $grid->column('admission_type','录取类别');
             $grid->column('enrollment_method','入学方式');
-            $grid->column('profession','相应招生专业');
 
 
             //如果special_income_quantity值不大于income_quantity字体颜色为绿色，反之为红色
@@ -44,9 +45,9 @@ class OutcomequeryController extends AdminController
                 // 设置弹窗标题，显示'ID', '年度', '支出的教师姓名', '类型','明细','数量','归属单位','录取类别','入学方式','相应招生专业'的表格
                 $modal->title('明细情况');
 
-                $outcomes = Outcome::where('year',$this->year)->where('type',$this->type)->where('unit', $this->unit)->where('teacher',$this->teacher)->where('admission_type', $this->admission_type)->where('enrollment_method', $this->enrollment_method)->where('profession', $this->profession)->
-                get(['id','year','type','student_id','unit','admission_type','enrollment_method','profession','student_name','actual_guidance_teacher','teacher'])->toArray();
-                $titles=['ID', '年度', '类型', '考生身份证号（唯一）','归属单位','录取类别','入学方式','相应招生专业','学生姓名','实际指导老师','招生指标对应老师'];
+                $outcomes = Outcome::where('year',$this->year)->where('type',$this->type)->where('unit', $this->unit)->where('teacher',$this->teacher)->where('detail', $this->detail)->where('enrollment_method', $this->enrollment_method)->where('profession', $this->profession)->
+                get(['year','type','student_id','admission_batch','admission_type','enrollment_method','unit','detail','profession','student_name','actual_guidance_teacher','teacher'])->toArray();
+                $titles=['年度', '类型', '考生身份证号','录取批次','录取类别','入学方式','归属单位','归属单位下一级','招生专业','学生姓名','实际指导老师','招生指标对应老师'];
                 // $modal->table($titles,$comments);
                 // 设置弹窗宽度1100px
                 $modal->xl();
@@ -59,7 +60,7 @@ class OutcomequeryController extends AdminController
                 }else{
                     return "<span style='color:green;'>".$value."</span>";
                 }
-            });
+            })->sortable();
             // });
         
 
@@ -76,16 +77,17 @@ class OutcomequeryController extends AdminController
                 $filter->between('year','年度')->year()->width(3);
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
                 // $filter->equal('type','类型');
-                // $filter->in('detail', '明细')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
+                
                 $filter->equal('unit','归属单位')->Select(config('admin.units'))->width(3);
+                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
                 //录取类别
-                $filter->equal('admission_type','录取类别')->Select(config('admin.admission_types'))->width(3);
+                // $filter->equal('admission_type','录取类别')->Select(config('admin.admission_types'))->width(3);
                 //录取方式
                 $filter->equal('enrollment_method','入学方式')->Select(config('admin.enrollment_methods'))->width(3);
 
                 //招生指标对应老师
-                $filter->equal('teacher','支出老师姓名')->width(3);                
-                $filter->equal('profession','专业')->width(3);
+                $filter->equal('teacher','招生指标对应老师')->width(3);                
+                $filter->equal('profession','招生专业')->width(3);
         
             });
             // $grid->disablePagination();

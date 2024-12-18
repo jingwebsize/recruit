@@ -11,6 +11,7 @@ use Dcat\Admin\Widgets\Modal;
 use Dcat\Admin\Admin;
 use App\Admin\Forms\LimitImport;
 use App\Admin\Actions\LimitTemplate;
+use App\Models\Tag;
 
 class LimitController extends AdminController
 {
@@ -24,26 +25,40 @@ class LimitController extends AdminController
         return Grid::make(new Limit(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('year');
+            $grid->column('type');
             $grid->column('teacher');
             // $grid->column('time');
-            $grid->column('type');
-            $grid->column('admission_type');
-            $grid->column('enrollment_method');
-            $grid->column('detail');
+            $grid->column('department','招生研究所');
+            // $grid->column('admission_type');
+            $grid->column('profession');
             $grid->column('number');
             $grid->column('unit');
-            $grid->column('profession');
-            $grid->column('check_status')->bool([1 => true, 0 => false]);;
+            $grid->column('detail');
+            $grid->column('enrollment_method');
+            
+            // $grid->column('check_status')->bool([1 => true, 0 => false]);;
+            
+            $grid->column('remark')->sortable();
             $grid->column('operator');
-            $grid->column('remark');
-            $grid->column('created_at');
-            $grid->column('updated_at')->sortable();
-        
+            // $grid->column('created_at');
+            $grid->column('updated_at')->sortable()->display(function ($value) {
+                return date('Y-m-d', strtotime($value));
+            });
+            $grid->expandFilter();
             $grid->filter(function (Grid\Filter $filter) {
-                $filter->equal('id');
+                // 更改为 panel 布局
+                $filter->panel();
+                $filter->between('year','年度')->year()->width(3);
+                $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
+                // $filter->equal('type','类型');
+                $filter->equal('teacher','招生指标对应老师')->width(3);  
+                $filter->equal('department','招生研究所')->width(3);  
+                $filter->equal('unit','归属单位')->Select(config('admin.units'))->width(3);
+                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
+                $filter->equal('enrollment_method','入学方式')->Select(config('admin.enrollment_methods'))->width(3);
         
             });
-
+            $grid->withBorder();
             //增加一个导入excel文件的按钮
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->append(Modal::make()
@@ -104,13 +119,14 @@ class LimitController extends AdminController
             $form->text('year')->default(date('Y'));
             $form->select('type')->options(config('admin.types'));
             $form->text('teacher');
+            $form->text('department');
             // $form->text('time');
             // $form->text('type');
             // $form->text('admission_type');
             // $form->text('enrollment_method');
             // $form->text('detail');
 
-            $form->select('admission_type')->options(config('admin.admission_types'));
+            // $form->select('admission_type')->options(config('admin.admission_types'));
             $form->select('enrollment_method')->options(config('admin.enrollment_methods'));
             $form->select('detail')->options(function ($id) {
                 // $tags = \App\Models\Tag::pluck('tag', 'id');

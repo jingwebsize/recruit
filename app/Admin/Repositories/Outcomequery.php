@@ -66,25 +66,27 @@ class Outcomequery extends Repository
         $perPage = $params['perpage'] ?? 20;
         $start = $params['start'] ?? 0;
 
-        $type = request()->input('type');
+        
         $year = request()->input('year');
-        // $detail = request()->input('detail');
-        $unit = request()->input('unit');
+        $type = request()->input('type');
         $teacher = request()->input('teacher');
-        $admission_type = request()->input('admission_type');
-        $enrollment_method = request()->input('enrollment_method');
         $profession = request()->input('profession');
+        $unit = request()->input('unit');
+        $detail = request()->input('detail');
+        // $admission_type = request()->input('admission_type');
+        $enrollment_method = request()->input('enrollment_method');
+        
 
         // dd(request()->input());
         // dd($teacher);
 
         // 查询limit表，选择year, type, teacher, unit, admission_type, enrollment_method, profession字段，并计算number字段的总和，命名为limit_quantity
-        $limitQuery = DB::table('limit')->select(DB::raw('year, type, teacher, unit, admission_type, enrollment_method, profession,sum(number) as limit_quantity'))
-            ->groupBy('year', 'type', 'teacher','unit','admission_type', 'enrollment_method', 'profession');
+        $limitQuery = DB::table('limit')->select(DB::raw('year, type, teacher, unit, detail, enrollment_method, profession,sum(number) as limit_quantity'))
+            ->groupBy('year', 'type', 'teacher','unit','detail', 'enrollment_method', 'profession');
 
         // 查询outcomes表，选择year、type、teacher、unit、admission_type、enrollment_method、profession字段，并计算每个组合的数量
-        $OutcomeQuery = DB::table('outcomes')->select(DB::raw('year, type, teacher, unit, admission_type, enrollment_method, profession, count(*) as outcome_quantity'))
-            ->groupBy('year', 'type', 'teacher','unit','admission_type', 'enrollment_method', 'profession');
+        $OutcomeQuery = DB::table('outcomes')->select(DB::raw('year, type, teacher, unit, detail, enrollment_method, profession, count(*) as outcome_quantity'))
+            ->groupBy('year', 'type', 'teacher','unit','detail', 'enrollment_method', 'profession');
         
         if ($type !== null) {
             $limitQuery->whereIn('type', $type);
@@ -100,10 +102,10 @@ class Outcomequery extends Repository
                 $OutcomeQuery->where('year', '<=', $year['end']);
             }
         }
-        // if ($detail !== null) {
-        //     $incomeQuery->whereIn('detail', $detail);
-        //     $limitQuery->whereIn('detail', $detail);
-        // }
+        if ($detail !== null) {
+            $limitQuery->whereIn('detail', $detail);
+            $OutcomeQuery->whereIn('detail', $detail);
+        }
         if ($unit !== null) {
             $limitQuery->where('unit', $unit);
             $OutcomeQuery->where('unit', $unit);
@@ -112,10 +114,10 @@ class Outcomequery extends Repository
             $limitQuery->where('teacher', $teacher);
             $OutcomeQuery->where('teacher', $teacher);
         }
-        if ($admission_type !== null) {
-            $limitQuery->where('admission_type', $admission_type);
-            $OutcomeQuery->where('admission_type', $admission_type);
-        }
+        // if ($admission_type !== null) {
+        //     $limitQuery->where('admission_type', $admission_type);
+        //     $OutcomeQuery->where('admission_type', $admission_type);
+        // }
         if ($enrollment_method !== null) {
             $limitQuery->where('enrollment_method', $enrollment_method);
             $OutcomeQuery->where('enrollment_method', $enrollment_method);
@@ -133,21 +135,21 @@ class Outcomequery extends Repository
         ->leftJoin(DB::raw("({$OutcomeQuery->toSql()}) as OutcomeData"),function ($join){
             $join->on('LimitData.year','=','OutcomeData.year')
                 ->on('LimitData.type','=','OutcomeData.type')
-                // ->on('LimitData.detail','=','OutcomeData.detail')
+                ->on('LimitData.detail','=','OutcomeData.detail')
                 ->on('LimitData.unit','=','OutcomeData.unit')
                 ->on('LimitData.teacher','=','OutcomeData.teacher')
-                ->on('LimitData.admission_type','=','OutcomeData.admission_type')
+                // ->on('LimitData.admission_type','=','OutcomeData.admission_type')
                 ->on('LimitData.enrollment_method','=','OutcomeData.enrollment_method')
                 ->on('LimitData.profession','=','OutcomeData.profession');
         })->mergeBindings(($OutcomeQuery))
         ->select(
             'LimitData.year',
             'LimitData.type',
-            // 'LimitData.detail',
+            'LimitData.detail',
             'LimitData.unit',
             'LimitData.limit_quantity',
             'LimitData.teacher',
-            'LimitData.admission_type',
+            // 'LimitData.admission_type',
             'LimitData.enrollment_method',
             'LimitData.profession',
             DB::raw('IFNULL(OutcomeData.outcome_quantity,0) as outcome_quantity'),

@@ -5,10 +5,9 @@ namespace App\Admin\Forms;
 use Dcat\Admin\Widgets\Form;
 use Dcat\EasyExcel\Excel;
 use App\Models\Tag;
-use App\Models\SpecialIncome;
 use Dcat\Admin\Admin;
 
-class SincomeImport extends Form
+class TagImport extends Form
 {
     /**
      * Handle the form request.
@@ -39,29 +38,13 @@ class SincomeImport extends Form
         //         ],
         //     ],
         // ]
-        // 取数据库tags数据表的数据
-        $tags =Tag::pluck('tag')->toArray();
-        // 处理数据
+        // 
         foreach ($data['Sheet1'] as $row) {
-            //每行中明细是否存在在tag数组里，不存在就退出循环，报错
-            if(!in_array($row['归属单位下一级（平台或专业）'], $tags)){
-                return $this->response()->error('归属单位下一级不存在');
-            }
-        }
-        foreach ($data['Sheet1'] as $row) {
-            // var_dump($row);
             // exit;
-            // 创建数据，SpecialIncome表
-            SpecialIncome::create([
-                'year' => $row['年度'],
-                'reason' => $row['收入原因'],
-                //'income_time' => $row['收入时间'],
-                'type' => $row['类型'],
-                'number' => $row['数量'],
-                'detail' => $row['归属单位下一级（平台或专业）'],
-                'check' => 1,
-                'operator' => Admin::user()->name,
-                'remark' => $row['备注'],
+            // 
+            Tag::create([
+                'tag' => $row['归属单位下一级（平台或专业）'],
+                'display' => 1,
                 // 'created_at' => date('Y-m-d H:i:s'),
                 // 'updated_at' => date('Y-m-d H:i:s'),
             ]);

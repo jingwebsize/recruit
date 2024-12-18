@@ -41,12 +41,30 @@ class IncomeImport extends Form
         // ]
         // 取数据库tags数据表的数据
         $tags =Tag::pluck('tag')->toArray();
+        $types = config('admin.types'); 
+        $enrollment_methods = config('admin.enrollment_methods');
+        $units = config('admin.units');
+        $count = 0;
         // 处理数据
         foreach ($data['Sheet1'] as $row) {
-            //每行中明细是否存在在tag数组里，不存在就退出循环，报错
-            if(!in_array($row['明细'], $tags)){
-                return $this->response()->error('明细不存在');
+            $count++;
+            if(!in_array($row['类型'], $types)){
+                return $this->response()->error('第'.$count.'行类型不存在');
             }
+            //每行中归属单位是否存在在units数组里，不存在就退出循环，报错
+            if(!in_array($row['归属单位'], $units)){
+                return $this->response()->error('第'.$count.'行归属单位不存在');
+            }
+            //每行中明细是否存在在tag数组里，不存在就退出循环，报错
+            if(!in_array($row['归属单位下一级（平台或专业）'], $tags)){
+                return $this->response()->error('第'.$count.'行归属单位下一级不存在');
+            }
+            //每行中入学方式是否存在在enrollment_methods数组里，不存在就退出循环，报错
+            if(!in_array($row['入学方式'], $enrollment_methods)){
+                return $this->response()->error('第'.$count.'行入学方式不存在');
+            }
+        }
+        foreach ($data['Sheet1'] as $row) {
             // var_dump($row);
             // exit;
             // 创建数据，Income表
@@ -54,10 +72,13 @@ class IncomeImport extends Form
                 'year' => $row['年度'],
                 // 'reason' => $row['收入原因'],
                 // 'income_time' => $row['收入时间'],
+                'time' => $row['学校计划下达时间'],
                 'type' => $row['类型'],
-                'number' => $row['数量'],
-                'detail' => $row['明细'],
+                'school_detail' => $row['首批学校明细'],
+                'number' => intval($row['首批分配数量']),
                 'unit' => $row['归属单位'],
+                'detail' => $row['归属单位下一级（平台或专业）'],
+                'enrollment_method' => $row['入学方式'],
                 'check' => 1,
                 'operator' => Admin::user()->name,
                 'remark' => $row['备注'],

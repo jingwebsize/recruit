@@ -69,17 +69,18 @@ class Limitquery extends Repository
         $year = request()->input('year');
         $detail = request()->input('detail');
         $unit = request()->input('unit');
+        $enrollment_method = request()->input('enrollment_method');
         // dd($params);
 
 
         //查询Income表中按照年度year，类型type，明细detail，单位unit进行分组求和得到数量 
-            $incomeQuery = DB::table('incomes')->select(DB::raw('year, type, detail, unit, sum(number) as income_quantity'))
-            ->groupBy('year', 'type', 'detail', 'unit');
+            $incomeQuery = DB::table('incomes')->select(DB::raw('year, type, detail, unit,enrollment_method, sum(number) as income_quantity'))
+            ->groupBy('year', 'type', 'detail', 'unit','enrollment_method');
         
         //查询Limit表中按照年度year，类型type，明细detail，单位unit进进行分组求和得到数量
 
-            $limitQuery = DB::table('limit')->select(DB::raw('year, type, detail, unit, sum(number) as limit_quantity'))
-            ->groupBy('year', 'type', 'detail', 'unit');
+            $limitQuery = DB::table('limit')->select(DB::raw('year, type, detail, unit,enrollment_method, sum(number) as limit_quantity'))
+            ->groupBy('year', 'type', 'detail', 'unit','enrollment_method');
         
         if ($type !== null) {
             $incomeQuery->whereIn('type', $type);
@@ -103,6 +104,10 @@ class Limitquery extends Repository
             $incomeQuery->where('unit', $unit);
             $limitQuery->where('unit', $unit);
         }
+        if ($enrollment_method !== null) {
+            $incomeQuery->where('enrollment_method', $enrollment_method);
+            $limitQuery->where('enrollment_method', $enrollment_method);
+        }
 
 
         // //将两个表融合
@@ -116,13 +121,15 @@ class Limitquery extends Repository
             $join->on('incomeData.year','=','limitData.year')
                 ->on('incomeData.type','=','limitData.type')
                 ->on('incomeData.detail','=','limitData.detail')
-                ->on('incomeData.unit','=','limitData.unit');
+                ->on('incomeData.unit','=','limitData.unit')
+                ->on('incomeData.enrollment_method','=','limitData.enrollment_method');
         })->mergeBindings(($limitQuery))
         ->select(
             'incomeData.year',
             'incomeData.type',
             'incomeData.detail',
             'incomeData.unit',
+            'incomeData.enrollment_method',
             'incomeData.income_quantity',
             DB::raw('IFNULL(limitData.limit_quantity,0) as limit_quantity'),
             DB::raw('incomeData.income_quantity-IFNULL(limitData.limit_quantity,0) as res')

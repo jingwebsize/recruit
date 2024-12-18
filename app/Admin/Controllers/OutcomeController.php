@@ -23,27 +23,46 @@ class OutcomeController extends AdminController
     protected function grid()
     {
         return Grid::make(new Outcome(), function (Grid $grid) {
-            $grid->column('id')->sortable();
-            $grid->column('year');
-            $grid->column('type');
-            $grid->column('student_id');
-            $grid->column('admission_type');
-            $grid->column('enrollment_method');
-            $grid->column('unit');
-            $grid->column('profession');
-            $grid->column('student_name');
-            $grid->column('actual_guidance_teacher');
-            $grid->column('teacher');
-            $grid->column('check_status');
-            $grid->column('operator');
-            $grid->column('remark');
-            $grid->column('created_at');
-            $grid->column('updated_at')->sortable();
+            $grid->withBorder();
+            $grid->scrollbarX();
+            $grid->column('id')->sortable()->width(30);
+            $grid->column('year')->width(60);
+            $grid->column('type')->width(60);
+            $grid->column('student_id')->width(160);
+            $grid->column('admission_batch')->width(100);
+            $grid->column('admission_type')->width(100);
+            $grid->column('enrollment_method')->width(100);
+            $grid->column('unit')->width(100);
+            $grid->column('detail')->width(120);
+            $grid->column('profession')->width(100);
+            $grid->column('student_name')->width(80);
+            $grid->column('actual_guidance_teacher')->width(80);
+            $grid->column('teacher') ->width(100);
+            // $grid->column('check_status');
+            
+            $grid->column('remark')->width(100);
+            $grid->column('operator')->width(100);
+            $grid->column('updated_at')->sortable()->display(function ($value) {
+                return date('Y-m-d', strtotime($value));
+            })->width(100);
+            //增加录取批次、学生性别、学生高校、学校属性、学生专业、学生联系电话、学生邮箱
+            $grid->column('student_gender');
+            $grid->column('student_college');
+            $grid->column('school_attributes');
+            $grid->column('student_major');
+            $grid->column('student_phone');
+            $grid->column('student_email');
+
+            // $grid->column('created_at');
+            // $grid->column('updated_at')->sortable();
         
             // $grid->filter(function (Grid\Filter $filter) {
             //     $filter->equal('id');
         
             // });
+            
+
+
             $grid->expandFilter();
             $grid->filter(function (Grid\Filter $filter) {
                 // 更改为 panel 布局
@@ -51,8 +70,8 @@ class OutcomeController extends AdminController
                 $filter->between('year','年度')->year()->width(3);
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
                 // $filter->equal('type','类型');
-                $filter->in('detail', '明细')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
                 $filter->equal('unit','归属单位')->Select(config('admin.units'))->width(3);
+                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
                 //录取类别
                 $filter->equal('admission_type','录取类别')->Select(config('admin.admission_types'))->width(3);
                 //录取方式
@@ -129,9 +148,10 @@ class OutcomeController extends AdminController
             // $form->text('type');
             $form->select('type')->options(config('admin.types'));
             $form->text('student_id');
-            // $form->text('admission_type');
             // $form->text('enrollment_method');
-            $form->select('admission_type')->options(config('admin.admission_types'));
+            $form->text('admission_batch');
+            $form->text('admission_type');
+            // $form->select('admission_type')->options(config('admin.admission_types'));
             $form->select('enrollment_method')->options(config('admin.enrollment_methods'));
             // $form->text('unit');
             $form->select('unit','归属单位')->options(config('admin.units'));
@@ -144,6 +164,14 @@ class OutcomeController extends AdminController
             $form->switch('check_status')->default(1);
             $form->text('operator')->default(Admin::user()->name);
             $form->text('remark');
+
+            //增加学生性别、学生高校、学校属性、学生专业、学生联系电话、学生邮箱
+            $form->text('student_gender');
+            $form->text('student_college');
+            $form->text('school_attributes');
+            $form->text('student_major');
+            $form->text('student_phone');
+            $form->text('student_email');
         
             $form->display('created_at');
             $form->display('updated_at');

@@ -41,7 +41,9 @@ class IncomequeryController extends AdminController
 
             $grid->column('year','年度');
             $grid->column('type');
-            $grid->column('detail','对应明细');
+            $grid->column('detail','归属单位下一级');
+            // $grid->column('special_income_quantity','特殊收入数量');
+
             //如果special_income_quantity值不大于income_quantity字体颜色为绿色，反之为红色
          
             $grid->column('special_income_quantity','数量')->display(function ($value) {
@@ -88,7 +90,8 @@ class IncomequeryController extends AdminController
                 $filter->between('year','年度')->year()->width(3);
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
                 // $filter->equal('type','类型');
-                $filter->in('detail', '明细')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
+                $filter->in('detail', '归属单位下一级')->multipleSelect(Tag::pluck('tag','tag')->toArray())->width(3);
+                $filter->equal('enrollment_method','入学方式')->Select(config('admin.enrollment_methods'))->width(3);
         
             });
             // $grid->disablePagination();
