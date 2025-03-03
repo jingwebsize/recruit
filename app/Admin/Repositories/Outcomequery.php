@@ -45,6 +45,7 @@ class Outcomequery extends Repository
         $currentPage = $model->getCurrentPage();
         // 获取每页显示行数
         $perPage = $model->getPerPage();
+        $perPage = max($perPage, 1); // 关键修复点
 
         $start = ($currentPage - 1) * $perPage;
 
@@ -55,11 +56,35 @@ class Outcomequery extends Repository
 
         $data = $this->getList($params); // 获取数据列表
 
-        return $model->makePaginator(
-            $data['total'] ?? 0, // 传入总记录数
-            $data['subjects'] ?? [] // 传入数据二维数组
-        );        
+        // return $model->makePaginator(
+        //     $data['total'] ?? 0, // 传入总记录数
+        //     $data['subjects'] ?? [],// 传入数据二维数组
+        // );        
+        // 返回分页数据及汇总值
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            $data['subjects'],
+            $data['total'],
+            $perPage, 
+            $currentPage,
+            [
+                'path' => url()->current(),
+                'totals' => [
+                    'count_limit_quantity' => $data['count_limit_quantity'],
+                    'count_outcome_quantity' => $data['count_outcome_quantity'],
+                    'count_res' => $data['count_res'],
+                ],
+            ]
+        );
     }
+
+    // public function getData(){
+    //     $data = $this->getList($params); // 获取数据列表
+    //     return $model->makePaginator(
+    //         $data['total'] ?? 0, // 传入总记录数
+    //         $data['subjects'] ?? [],// 传入数据二维数组
+    //     );  
+
+    // }
 
     public function getList(array $params){
 
@@ -78,7 +103,9 @@ class Outcomequery extends Repository
         
 
         // dd(request()->input());
+        $sort = request()->input('_sort')??['column'=>'res', 'type'=>'desc'];
         // dd($teacher);
+
 
         // 查询limit表，选择year, type, teacher, unit, admission_type, enrollment_method, profession字段，并计算number字段的总和，命名为limit_quantity
         $limitQuery = DB::table('limit')->select(DB::raw('year, type, teacher, unit, detail, enrollment_method, profession,sum(number) as limit_quantity'))
@@ -154,14 +181,22 @@ class Outcomequery extends Repository
             'LimitData.profession',
             DB::raw('IFNULL(OutcomeData.outcome_quantity,0) as outcome_quantity'),
             DB::raw('LimitData.limit_quantity-IFNULL(OutcomeData.outcome_quantity,0) as res')
-        )->orderBy('year','desc')->orderBy('res','asc');
+        )->orderBy($sort['column'],$sort['type']);
+        // ->orderBy('res','desc')->orderBy('year','desc');
 
         // $query = DB::table('special_incomes')->select(DB::raw('year, type, detail, sum(number) as special_income_quantity'))
         // ->groupBy('year', 'type', 'detail');
 
-
+        
+        
         $count= $query->count();
-        // dd($perPage);
+        //加总limit_quantity，outcome_quantity，res
+        $count_limit_quantity= $query->get()->sum('limit_quantity');
+        $count_outcome_quantity= $query->get()->sum('outcome_quantity');
+        $count_res= $query->get()->sum('res');
+        
+        
+        // dd($count_limit_quantity);
         // $query->orderBy('specialIncomeData.year','desc')->orderBy('specialIncomeData.type','asc')->orderBy('specialIncomeData.detail','asc');
         $list = $query->limit($perPage)->offset($start)->get()->toArray();
         // $this->filter()->build($query);
@@ -170,7 +205,25 @@ class Outcomequery extends Repository
         return [
             'total' => $count,
             'subjects' => $list,
+            'count_limit_quantity' => $count_limit_quantity,
+            'count_outcome_quantity' => $count_outcome_quantity,
+            'count_res' => $count_res,
         ];
     }
 
+        // 通过这个方法可以指定查询的字段，默认"*"
+        // public function getGridColumns($keyname)
+        // {
+        //     if ($keyname == 'count_limit_quantity') {
+        //         return 'count_limit_quantity';
+        //     }
+        //     if ($keyname == 'count_outcome_quantity') {
+        //         return 'count_outcome_quantity';
+        //     }
+        //     if ($keyname == 'count_res') {
+        //         return 'count_res';
+        //     }
+        //     return 0;
+  
+        // }
 }

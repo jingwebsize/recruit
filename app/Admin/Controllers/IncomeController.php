@@ -87,6 +87,7 @@ class IncomeController extends AdminController
                 $filter->equal('enrollment_method','入学方式')->Select(config('admin.enrollment_methods'))->width(3);
         
             });
+            $grid->export();
         });
     }
 

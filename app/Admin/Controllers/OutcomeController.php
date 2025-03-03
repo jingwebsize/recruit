@@ -88,7 +88,7 @@ class OutcomeController extends AdminController
 
         
             });
-
+            $grid->export();
             //增加一个导入excel文件的按钮
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->append(Modal::make()
@@ -156,6 +156,10 @@ class OutcomeController extends AdminController
             $form->select('enrollment_method')->options(config('admin.enrollment_methods'));
             // $form->text('unit');
             $form->select('unit','归属单位')->options(config('admin.units'));
+            $form->select('detail')->options(function ($id) {
+                $tags = \App\Models\Tag::pluck('tag', 'tag');
+                return $tags;
+            });
             $form->text('profession');
             $form->text('student_name');
             $form->text('actual_guidance_teacher');

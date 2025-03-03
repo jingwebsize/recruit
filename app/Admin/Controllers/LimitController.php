@@ -50,7 +50,7 @@ class LimitController extends AdminController
                 $filter->panel();
                 $filter->between('year','年度')->year()->width(3);
                 $filter->in('type', '类型')->multipleSelect(config('admin.types'))->width(3);
-                // $filter->equal('type','类型');
+                $filter->equal('profession','招生专业')->width(3);
                 $filter->equal('teacher','招生指标对应老师')->width(3);  
                 $filter->equal('department','招生研究所')->width(3);  
                 $filter->equal('unit','归属单位')->Select(config('admin.units'))->width(3);
@@ -59,6 +59,7 @@ class LimitController extends AdminController
         
             });
             $grid->withBorder();
+            $grid->export();
             //增加一个导入excel文件的按钮
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->append(Modal::make()

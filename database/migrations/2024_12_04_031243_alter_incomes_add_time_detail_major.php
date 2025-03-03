@@ -16,7 +16,7 @@ class AlterIncomesAddTimeDetailMajor extends Migration
         Schema::table('incomes', function (Blueprint $table) {
             //增加下达时间、首批学校明细、招生专业、入学方式
             $table->string('time')->nullable()->comment('下达时间');
-            $table->string('school_detail')->nullable()->comment('首批学校明细');
+            $table->text('school_detail')->nullable()->comment('首批学校明细');
             $table->string('profession')->nullable()->comment('招生专业');
             $table->string('enrollment_method')->nullable()->comment('入学方式');
         });
