@@ -12,6 +12,8 @@ use Dcat\Admin\Widgets\Modal;
 use App\Models\Outcome;
 use Dcat\Admin\Widgets\Table;
 use Illuminate\Support\Facades\DB;
+// use App\Admin\Actions\LimitExport;
+use App\Admin\Forms\LimitExport;
 
 class OutcomequeryController extends AdminController
 {
@@ -130,7 +132,15 @@ class OutcomequeryController extends AdminController
             // $grid->disablePagination();
             // $grid->disableDeleteButton();
             // $grid->disableEditButton();
-            // $grid->export(); //需要自定义
+            $grid->export(new LimitExport())->xlsx()
+            ->disableExportSelectedRow()->disableExportCurrentPage();
+
+            //增加一个导入excel文件的按钮
+            // $grid->tools(function (Grid\Tools $tools) {
+            //         $tools->append(LimitExport::make());
+            // });   
+
+
             $grid->disableQuickEditButton();
             $grid->disableViewButton();
             //隐藏行操作那列
@@ -140,29 +150,29 @@ class OutcomequeryController extends AdminController
             // dd($grid->model()->getPaginator()->getOptions());
 
         // 添加汇总行
-            // $grid->header(function () use ($grid) {
-            //     // 获取分页器对象
-            //     $paginator = $grid->model()->paginator();
-            //     // dd($paginator->getOptions());
+            $grid->header(function () use ($grid) {
+                // 获取分页器对象
+                $paginator = $grid->model()->paginator();
+                // dd($paginator->getOptions());
 
-            //     if (!$paginator) {
-            //         return ''; // 无分页数据时直接返回
-            //     }
+                if (!$paginator) {
+                    return ''; // 无分页数据时直接返回
+                }
 
-            //     // 从 options 中获取汇总数据
-            //     $options = $paginator->getOptions();
-            //     // dd($options ->toArray());
-            //     $totals = $options['totals'] ?? [];
+                // 从 options 中获取汇总数据
+                $options = $paginator->getOptions();
+                // dd($options ->toArray());
+                $totals = $options['totals'] ?? [];
 
-            //     return <<<HTML
-            //     <div style="padding: 10px; background: #f8f8f8;">
-            //         <strong>总计：</strong>
-            //         总分配数量 - {$totals['count_limit_quantity']}, 
-            //         已支出 - {$totals['count_outcome_quantity']}, 
-            //         未支出 - {$totals['count_res']}
-            //     </div>
-            //     HTML;
-            // });
+                return <<<HTML
+                <div style="padding: 10px; background: #f8f8f8;">
+                    <strong>总计：</strong>
+                    分配数量: <strong>{$totals['count_limit_quantity']}</strong>, 
+                    已支出:  <strong>{$totals['count_outcome_quantity']}</strong>, 
+                    未支出:  <strong>{$totals['count_res']}</strong>
+                </div>
+                HTML;
+            });
 
         });
     }

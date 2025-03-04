@@ -42,16 +42,20 @@ class Outcomequery extends Repository
         // return $specialIncomeData;
 
         // 获取当前页数
+        // dd($model->getCurrentPage());
         $currentPage = $model->getCurrentPage();
         // 获取每页显示行数
         $perPage = $model->getPerPage();
-        $perPage = max($perPage, 1); // 关键修复点
+
+        $perPage = max($perPage, 1); 
+        $currentPage = max($currentPage, 1); // 关键修复点
 
         $start = ($currentPage - 1) * $perPage;
 
         $params = [
             'start' => $start,
             'perpage' => $perPage,
+            'isexport' => false,
         ];
 
         $data = $this->getList($params); // 获取数据列表
@@ -90,6 +94,7 @@ class Outcomequery extends Repository
 
         $perPage = $params['perpage'] ?? 20;
         $start = $params['start'] ?? 0;
+        $isexport = $params['isexport'] ?? false;
 
         
         $year = request()->input('year');
@@ -187,7 +192,12 @@ class Outcomequery extends Repository
         // $query = DB::table('special_incomes')->select(DB::raw('year, type, detail, sum(number) as special_income_quantity'))
         // ->groupBy('year', 'type', 'detail');
 
-        
+        if($isexport){
+            $list = $query->get()->map(function ($value) {
+                return (array)$value;
+            })->toArray();
+            return $list;
+        }
         
         $count= $query->count();
         //加总limit_quantity，outcome_quantity，res
@@ -226,4 +236,18 @@ class Outcomequery extends Repository
         //     return 0;
   
         // }
+
+        //调取全部数据
+        public function getAllData(){
+            $params = [
+                'start' => 0,
+                'perpage' => 2, //默认最多1000条
+                'isexport' => True,
+            ];
+    
+            $data = $this->getList($params); // 获取数据列表
+            return $data;
+        }
+
+
 }

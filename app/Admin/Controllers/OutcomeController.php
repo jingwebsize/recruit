@@ -41,11 +41,7 @@ class OutcomeController extends AdminController
             $grid->column('teacher') ->width(100);
             // $grid->column('check_status');
             
-            $grid->column('remark')->width(100);
-            $grid->column('operator')->width(100);
-            $grid->column('updated_at')->sortable()->display(function ($value) {
-                return date('Y-m-d', strtotime($value));
-            })->width(100);
+            $grid->column('remark')->width(100)->sortable();
             //增加录取批次、学生性别、学生高校、学校属性、学生专业、学生联系电话、学生邮箱
             $grid->column('student_gender');
             $grid->column('student_college');
@@ -53,6 +49,11 @@ class OutcomeController extends AdminController
             $grid->column('student_major');
             $grid->column('student_phone');
             $grid->column('student_email');
+
+            $grid->column('operator')->width(100);
+            $grid->column('updated_at')->sortable()->display(function ($value) {
+                return date('Y-m-d', strtotime($value));
+            })->width(100);
 
             // $grid->column('created_at');
             // $grid->column('updated_at')->sortable();
