@@ -69,8 +69,9 @@ class LimitExport extends AbstractExporter
 
         // var_dump($all);
         // exit;
-
-        return Excel::export($all)->headings($headings)->download('export_data.csv');
+        
+       Excel::export($all)->headings($headings)->download('export_data.csv');
+       exit;
 
     }
 }

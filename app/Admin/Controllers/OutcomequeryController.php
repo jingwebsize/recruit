@@ -132,7 +132,7 @@ class OutcomequeryController extends AdminController
             // $grid->disablePagination();
             // $grid->disableDeleteButton();
             // $grid->disableEditButton();
-            $grid->export(new LimitExport())->xlsx()
+            $grid->export(new LimitExport())
             ->disableExportSelectedRow()->disableExportCurrentPage();
 
             //增加一个导入excel文件的按钮
