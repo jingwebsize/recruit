@@ -28,6 +28,7 @@ class LimitExport extends AbstractExporter
         // $exporter = Excel::export($all);
         // dd(Excel::export($all)->csv()->raw());
         // return Excel::export($all)->headings($headings)->store('users.xlsx');
+        // var_dump($all);
         // $all = [
         //     [
         //         'year' => '2022',
@@ -69,7 +70,7 @@ class LimitExport extends AbstractExporter
         // var_dump($all);
         // exit;
 
-        return Excel::export($all)->headings($headings)->download('export_data.xlsx');
+        return Excel::export($all)->headings($headings)->download('export_data.csv');
 
     }
 }
